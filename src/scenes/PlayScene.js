@@ -1,11 +1,12 @@
 export default class PlayScene extends Phaser.Scene {
   constructor(config) {
     super(config);
+    this.config = config;
     this.MANAGER = null;
 
     this.PIPE_HORIZONTAL_DISTANCE = 0;
 
-    this.PIPE_DISTANCE_RANGE = [150, 250];
+    this.PIPE_DISTANCE_RANGE = [200, 250];
     let PIPE_HORIZONTAL_DISTANCE_RANGE = [500, 600];
 
     this.pipes = null;
@@ -25,36 +26,49 @@ export default class PlayScene extends Phaser.Scene {
 
     this.pipes = this.physics.add.group();
   }
-  create(data) {
+
+  createBG(){
     this.add.image(0, 0, "skyBackground").setOrigin(0);
+  }
 
-    this.MANAGER = this.physics.add.sprite(50, 200, "manager");
-
-    this.MANAGER.displayWidth = 50;
-    this.MANAGER.displayHeight = 80;
-    this.MANAGER.body.gravity.y = 700;
-
+  createPipes(){
     [...Array(3).keys()].forEach((i) => {
-      this.PIPE_HORIZONTAL_DISTANCE += 500;
-      const UPPER_PIPE = this.pipes.create(0, 0, "pipe").setOrigin(0, 1);
-      const LOWER_PIPE = this.pipes.create(0, 0, "pipe").setOrigin(0, 0);
+      this.PIPE_HORIZONTAL_DISTANCE += 900;
+      const UPPER_PIPE = this.pipes
+        .create(0, 0, "watermelonMonster")
+        .setOrigin(0, 1);
+      const LOWER_PIPE = this.pipes
+        .create(0, 0, "watermelonMonster")
+        .setOrigin(0, 0);
 
       this.placePipe(UPPER_PIPE, LOWER_PIPE);
     });
 
     this.pipes.setVelocityX(-300);
+  }
 
-    let particles = this.add.particles(0, 0, "manager", {
+  create(data) {
+    this.createBG();
+    this.createManager();
+    this.createPipes();
+    this.handleInputs();
+    this.setParticles();
+  }
+
+  setParticles() {
+    const particles = this.add.particles(0, 0, "manager", {
       speed: 10,
       scale: { start: 0.02, end: 0.02 },
       blendMode: "ADD",
     });
 
     particles.startFollow(this.MANAGER);
+  }
 
+  handleInputs() {
     this.input.on("pointerdown", this.flap, this);
 
-    this.input.keyboard.on("keydown-SPACE", this.flap);
+    this.input.keyboard.on("keydown-SPACE", this.flap, this);
 
     const combo = this.input.keyboard.createCombo([38, 38], {
       resetOnMatch: true,
@@ -65,8 +79,9 @@ export default class PlayScene extends Phaser.Scene {
       console.log("Konami Code entered!");
     });
   }
+
   update(time, delta) {
-    if (this.MANAGER.y > this.sys.game.canvas.height || this.MANAGER.y < 0) {
+    if (this.MANAGER.y > this.config.height || this.MANAGER.y < 0) {
       console.log("game over");
       this.restartGame();
     }
@@ -75,7 +90,16 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   flap() {
+    new Audio("./assets/sounds/jump.ogg").play();
     this.MANAGER.body.velocity.y = -250;
+  }
+
+  createManager() {
+    this.MANAGER = this.physics.add.sprite(50, 200, "manager");
+
+    this.MANAGER.displayWidth = 50;
+    this.MANAGER.displayHeight = 80;
+    this.MANAGER.body.gravity.y = 700;
   }
 
   placePipe(upper, lower) {
