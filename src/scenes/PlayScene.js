@@ -10,9 +10,14 @@ export default class PlayScene extends Phaser.Scene {
     let PIPE_HORIZONTAL_DISTANCE_RANGE = [500, 600];
 
     this.pipes = null;
+
+    this.scoreCount = 0;
+    this.scoreText = null;
+    this.gameOverState = false
   }
 
   init(data) {}
+
   preload() {
     this.canvas = this.sys.game.canvas;
 
@@ -27,18 +32,20 @@ export default class PlayScene extends Phaser.Scene {
     this.pipes = this.physics.add.group();
   }
 
-  createBG(){
+  createBG() {
     this.add.image(0, 0, "skyBackground").setOrigin(0);
   }
 
-  createPipes(){
+  createPipes() {
     [...Array(3).keys()].forEach((i) => {
-      this.PIPE_HORIZONTAL_DISTANCE += 900;
+      this.PIPE_HORIZONTAL_DISTANCE += 800;
       const UPPER_PIPE = this.pipes
         .create(0, 0, "watermelonMonster")
+        .setImmovable(true)
         .setOrigin(0, 1);
       const LOWER_PIPE = this.pipes
         .create(0, 0, "watermelonMonster")
+        .setImmovable(true)
         .setOrigin(0, 0);
 
       this.placePipe(UPPER_PIPE, LOWER_PIPE);
@@ -51,10 +58,22 @@ export default class PlayScene extends Phaser.Scene {
     this.createBG();
     this.createManager();
     this.createPipes();
-    // this.createColliders();
+    this.createColliders();
 
     this.handleInputs();
     this.setParticles();
+
+    this.scoreText = this.add.text(100, 100, this.scoreCount, { fontSize: "50px", fill: "#fff" });
+  }
+
+  createColliders() {
+    this.physics.add.collider(
+      this.MANAGER,
+      this.pipes,
+      this.gameOver,
+      null,
+      this
+    );
   }
 
   setParticles() {
@@ -72,29 +91,42 @@ export default class PlayScene extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-SPACE", this.flap, this);
 
-    const combo = this.input.keyboard.createCombo([38, 38], {
+    const combo = this.input.keyboard.createCombo([32, 32], {
       resetOnMatch: true,
     });
 
     this.input.keyboard.on("keycombomatch", (e) => {
-      console.log(e);
-      console.log("Konami Code entered!");
+      this.createMelons({ count: 8 });
     });
+  }
+  gameOver() {
+    console.log("Game Over");
+    this.gameOverState = true
+    // this.restartGame();
+    this.physics.pause();
+    this.MANAGER.setTint(0xf0000);
   }
 
   update(time, delta) {
     this.checkGameStatus();
     this.recyclePipes();
+
+    if(this.gameOverState == false) {
+      this.scoreCount += 1;
+      this.scoreText.setText(this.scoreCount)
+    }
+
   }
 
-  checkGameStatus(){
+  checkGameStatus() {
     if (this.MANAGER.y > this.config.height || this.MANAGER.y < 0) {
-      console.log("game over");
-      this.restartGame();
+      this.gameOver();
     }
   }
 
-
+  restartGame() {
+    this.scene.restart();
+  }
 
   flap() {
     new Audio("./assets/sounds/jump.ogg").play();
@@ -138,5 +170,22 @@ export default class PlayScene extends Phaser.Scene {
   restartGame() {
     this.MANAGER.x = 50;
     this.MANAGER.y = 200;
+  }
+
+  createMelons({ count: count }) {
+    [...Array(count)].forEach((i) => {
+      let randomXposision = Math.round(Math.random() * 20) + 105;
+      let melon = this.physics.add.sprite(randomXposision, 215, "slugger");
+      melon.displayWidth = 90;
+      melon.displayHeight = 90;
+
+      melon.body.velocity.x = Math.round(Math.random() * 5) * 300;
+      melon.body.velocity.y = 200;
+
+      melon.setBounce(0.9, 0.9);
+      this.physics.add.collider(melon, this.pipes, () => {
+        new Audio("./assets/sounds/hit.mp3").play();
+      });
+    });
   }
 }
