@@ -51,6 +51,8 @@ export default class PlayScene extends Phaser.Scene {
     this.createBG();
     this.createManager();
     this.createPipes();
+    // this.createColliders();
+
     this.handleInputs();
     this.setParticles();
   }
@@ -81,13 +83,18 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    this.checkGameStatus();
+    this.recyclePipes();
+  }
+
+  checkGameStatus(){
     if (this.MANAGER.y > this.config.height || this.MANAGER.y < 0) {
       console.log("game over");
       this.restartGame();
     }
-
-    this.recyclePipes();
   }
+
+
 
   flap() {
     new Audio("./assets/sounds/jump.ogg").play();
