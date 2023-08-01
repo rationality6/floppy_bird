@@ -21,13 +21,13 @@ export default class PlayScene extends Phaser.Scene {
   preload() {
     this.canvas = this.sys.game.canvas;
 
-    this.load.image("skyBackground", "assets/sky.png");
+    this.load.image("skyBackground", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/sky.png");
 
-    this.load.image("pipe", "assets/pipe.png");
+    // this.load.image("pipe", "assets/pipe.png");
 
-    this.load.image("watermelonMonster", "assets/melon/melon.webp");
-    this.load.image("slugger", "assets/melon/shot.webp");
-    this.load.image("manager", "assets/melon/chat.webp");
+    this.load.image("watermelonMonster", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/watermelon.webp");
+    this.load.image("slugger", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/slugger.webp");
+    this.load.image("manager", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/manager.webp");
 
     this.pipes = this.physics.add.group();
   }
@@ -96,12 +96,13 @@ export default class PlayScene extends Phaser.Scene {
     });
 
     this.input.keyboard.on("keycombomatch", (e) => {
-      this.createMelons({ count: 8 });
+      this.createMelons({ count: 4 });
     });
   }
   gameOver() {
     console.log("Game Over");
     this.gameOverState = true
+    new Audio("./assets/sounds/round_end.wav").play();
     // this.restartGame();
     this.physics.pause();
     this.MANAGER.setTint(0xf0000);
