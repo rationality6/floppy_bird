@@ -13,7 +13,8 @@ export default class PlayScene extends Phaser.Scene {
 
     this.scoreCount = 0;
     this.scoreText = null;
-    this.gameOverState = false
+    this.gameOverState = false;
+    this.userSoundPermission = false;
   }
 
   init(data) {}
@@ -21,13 +22,25 @@ export default class PlayScene extends Phaser.Scene {
   preload() {
     this.canvas = this.sys.game.canvas;
 
-    this.load.image("skyBackground", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/sky.png");
+    this.load.image(
+      "skyBackground",
+      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/sky.png"
+    );
 
     // this.load.image("pipe", "assets/pipe.png");
 
-    this.load.image("watermelonMonster", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/watermelon.webp");
-    this.load.image("slugger", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/slugger.webp");
-    this.load.image("manager", "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/manager.webp");
+    this.load.image(
+      "watermelonMonster",
+      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/watermelon.webp"
+    );
+    this.load.image(
+      "slugger",
+      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/slugger.webp"
+    );
+    this.load.image(
+      "manager",
+      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/manager.webp"
+    );
 
     this.pipes = this.physics.add.group();
   }
@@ -63,7 +76,14 @@ export default class PlayScene extends Phaser.Scene {
     this.handleInputs();
     this.setParticles();
 
-    this.scoreText = this.add.text(100, 100, this.scoreCount, { fontSize: "50px", fill: "#fff" });
+    this.scoreText = this.add.text(100, 100, this.scoreCount, {
+      fontSize: "50px",
+      fill: "#fff",
+    });
+
+    if(this.userSoundPermission == true){
+      
+    }
   }
 
   createColliders() {
@@ -101,7 +121,7 @@ export default class PlayScene extends Phaser.Scene {
   }
   gameOver() {
     console.log("Game Over");
-    this.gameOverState = true
+    this.gameOverState = true;
     new Audio("./assets/sounds/round_end.wav").play();
     // this.restartGame();
     this.physics.pause();
@@ -112,16 +132,18 @@ export default class PlayScene extends Phaser.Scene {
     this.checkGameStatus();
     this.recyclePipes();
 
-    if(this.gameOverState == false) {
+    if (this.gameOverState == false) {
       this.scoreCount += 1;
-      this.scoreText.setText(this.scoreCount)
+      this.scoreText.setText(this.scoreCount);
     }
-
+    
   }
 
   checkGameStatus() {
     if (this.MANAGER.y > this.config.height || this.MANAGER.y < 0) {
-      this.gameOver();
+      if (this.gameOverState == false) {
+        this.gameOver();
+      }
     }
   }
 
@@ -132,6 +154,12 @@ export default class PlayScene extends Phaser.Scene {
   flap() {
     new Audio("./assets/sounds/jump.ogg").play();
     this.MANAGER.body.velocity.y = -250;
+
+    if(this.userSoundPermission == false){
+      new Audio("./assets/sounds/railgun.mp3").play();
+    }
+    this.userSoundPermission = true;
+
   }
 
   createManager() {
