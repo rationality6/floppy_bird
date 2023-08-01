@@ -156,7 +156,7 @@ export default class PlayScene extends Phaser.Scene {
     this.MANAGER.body.velocity.y = -250;
 
     if(this.userSoundPermission == false){
-      new Audio("./assets/sounds/railgun.mp3").play();
+      new Audio("./assets/sounds/railgun_bgsound.mp3").play();
     }
     this.userSoundPermission = true;
 
