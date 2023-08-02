@@ -1,7 +1,8 @@
-class MenuScene extends Phaser.Scene {
+import BaseScene from "./BaseScene";
+
+class MenuScene extends BaseScene {
   constructor(config) {
-    super("MenuScene");
-    this.config = config;
+    super("MenuScene", config);
   }
 
   preload() {
@@ -16,8 +17,8 @@ class MenuScene extends Phaser.Scene {
 
   create() {
     let poster = this.add.image(400, 0, "poster").setOrigin(0);
-    poster.displayHeight = 650
-    poster.displayWidth = 400
+    poster.displayHeight = 650;
+    poster.displayWidth = 400;
 
     this.add
       .text(50, 50, "청원 바로가기", {
@@ -59,7 +60,7 @@ class MenuScene extends Phaser.Scene {
         window.open("https://www.clien.net/");
       });
 
-      this.add
+    this.add
       .text(50, 470, "퉤끼님 아이디어 국민의힘 로고 보기", {
         fontSize: "20px",
         fill: "#fff",

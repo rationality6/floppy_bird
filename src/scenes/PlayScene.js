@@ -1,8 +1,8 @@
-export default class PlayScene extends Phaser.Scene {
-  constructor(config) {
-    super("PlayScene");
-    this.config = config;
+import BaseScene from "./BaseScene";
 
+export default class PlayScene extends BaseScene {
+  constructor(config) {
+    super("PlayScene", config);
     this.MANAGER = null;
 
     this.PIPE_HORIZONTAL_DISTANCE = 0;

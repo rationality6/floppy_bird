@@ -1,6 +1,8 @@
-class PreloadScene extends Phaser.Scene {
-  constructor() {
-    super("PreloadScene");
+import BaseScene from "./BaseScene";
+
+class PreloadScene extends BaseScene {
+  constructor(config) {
+    super("PreloadScene", config);
   }
 
   preload() {
@@ -24,10 +26,7 @@ class PreloadScene extends Phaser.Scene {
       "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/manager.webp"
     );
 
-    this.load.image(
-      "poster",
-      "assets/melon/poster.webp"
-    );
+    this.load.image("poster", "assets/melon/poster.webp");
 
     this.load.image("pause", "assets/pause.png");
 

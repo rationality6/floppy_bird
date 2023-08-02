@@ -1,6 +1,6 @@
 class PeoplepowerScene extends Phaser.Scene {
-  constructor() {
-    super("PeoplepowerScene");
+  constructor(config) {
+    super("PeoplepowerScene", config);
   }
 
   preload() {
@@ -10,7 +10,6 @@ class PeoplepowerScene extends Phaser.Scene {
   }
 
   create() {
-
     this.cameras.main.setBackgroundColor("#ffffff");
 
     const navi = this.add.text(50, 50, "로고를 클릭해주세요", {
