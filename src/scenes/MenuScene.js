@@ -58,6 +58,16 @@ class MenuScene extends Phaser.Scene {
       .on("pointerdown", () => {
         window.open("https://www.clien.net/");
       });
+
+      this.add
+      .text(50, 450, "국민의힘 로고 보기", {
+        fontSize: "20px",
+        fill: "#fff",
+      })
+      .setInteractive()
+      .on("pointerdown", () => {
+        this.scene.start("PeoplepowerScene");
+      });
   }
 }
 
