@@ -60,7 +60,7 @@ class MenuScene extends Phaser.Scene {
       });
 
       this.add
-      .text(50, 450, "국민의힘 로고 보기", {
+      .text(50, 470, "퉤끼님 아이디어 국민의힘 로고 보기", {
         fontSize: "20px",
         fill: "#fff",
       })
