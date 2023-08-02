@@ -1,48 +1,28 @@
 export default class PlayScene extends Phaser.Scene {
   constructor(config) {
-    super(config);
+    super("PlayScene");
     this.config = config;
+
     this.MANAGER = null;
 
     this.PIPE_HORIZONTAL_DISTANCE = 0;
-
     this.PIPE_DISTANCE_RANGE = [200, 250];
-    let PIPE_HORIZONTAL_DISTANCE_RANGE = [500, 600];
 
     this.pipes = null;
 
     this.scoreCount = 0;
     this.scoreText = null;
     this.gameOverState = false;
-    this.userSoundPermission = false;
   }
-
-  init(data) {}
 
   preload() {
     this.canvas = this.sys.game.canvas;
 
-    this.load.image(
-      "skyBackground",
-      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/sky.png"
-    );
-
-    // this.load.image("pipe", "assets/pipe.png");
-
-    this.load.image(
-      "watermelonMonster",
-      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/watermelon.webp"
-    );
-    this.load.image(
-      "slugger",
-      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/slugger.webp"
-    );
-    this.load.image(
-      "manager",
-      "https://cloudbucket22.s3.ap-northeast-2.amazonaws.com/manager.webp"
-    );
-
     this.pipes = this.physics.add.group();
+
+    let bgSound = new Audio("./assets/sounds/railgun_bgsound.mp3");
+    bgSound.loop = true;
+    bgSound.play();
   }
 
   createBG() {
@@ -51,11 +31,12 @@ export default class PlayScene extends Phaser.Scene {
 
   createPipes() {
     [...Array(3).keys()].forEach((i) => {
-      this.PIPE_HORIZONTAL_DISTANCE += 800;
+      this.PIPE_HORIZONTAL_DISTANCE += 700;
       const UPPER_PIPE = this.pipes
         .create(0, 0, "watermelonMonster")
         .setImmovable(true)
         .setOrigin(0, 1);
+
       const LOWER_PIPE = this.pipes
         .create(0, 0, "watermelonMonster")
         .setImmovable(true)
@@ -69,21 +50,24 @@ export default class PlayScene extends Phaser.Scene {
 
   create(data) {
     this.createBG();
-    this.createManager();
     this.createPipes();
+
+    this.createManager();
+
     this.createColliders();
 
     this.handleInputs();
     this.setParticles();
 
-    this.scoreText = this.add.text(100, 100, this.scoreCount, {
+    this.scoreText = this.add.text(50, 50, this.scoreCount, {
       fontSize: "50px",
       fill: "#fff",
     });
 
-    if(this.userSoundPermission == true){
-      
-    }
+    const pauseButton = this.add.image(750, 550, "pause").setScale(3);
+    pauseButton.setInteractive().on("pointerdown", () => {
+      alert("pause");
+    });
   }
 
   createColliders() {
@@ -111,21 +95,41 @@ export default class PlayScene extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-SPACE", this.flap, this);
 
-    const combo = this.input.keyboard.createCombo([32, 32], {
-      resetOnMatch: true,
-    });
+    const combo = this.input.keyboard.createCombo(
+      [32, 32, 32, 32, 32, 32, 32, 32, 32],
+      {
+        resetOnMatch: true,
+      }
+    );
 
     this.input.keyboard.on("keycombomatch", (e) => {
       this.createMelons({ count: 4 });
     });
   }
   gameOver() {
-    console.log("Game Over");
     this.gameOverState = true;
     new Audio("./assets/sounds/round_end.wav").play();
-    // this.restartGame();
+
     this.physics.pause();
+    this.scene.pause();
+
     this.MANAGER.setTint(0xf0000);
+
+    this.time.addEvent({
+      delay: 2000,
+      callback: () => {
+        this.pipes = null;
+        this.pipes = this.physics.add.group();
+        this.PIPE_HORIZONTAL_DISTANCE = 0;
+        this.createPipes();
+
+        this.scoreCount = 0;
+        this.gameOverState = false;
+
+        this.scene.restart();
+      },
+      loop: false,
+    });
   }
 
   update(time, delta) {
@@ -134,9 +138,8 @@ export default class PlayScene extends Phaser.Scene {
 
     if (this.gameOverState == false) {
       this.scoreCount += 1;
-      this.scoreText.setText(this.scoreCount);
+      this.scoreText.setText(`Score: ${this.scoreCount}`);
     }
-    
   }
 
   checkGameStatus() {
@@ -152,14 +155,8 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   flap() {
-    new Audio("./assets/sounds/jump.ogg").play();
+    new Audio("./assets/sounds/jump.mp3").play();
     this.MANAGER.body.velocity.y = -250;
-
-    if(this.userSoundPermission == false){
-      new Audio("./assets/sounds/railgun_bgsound.mp3").play();
-    }
-    this.userSoundPermission = true;
-
   }
 
   createManager() {
