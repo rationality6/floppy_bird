@@ -13,6 +13,7 @@ export default class PlayScene extends Phaser.Scene {
     this.scoreCount = 0;
     this.scoreText = null;
     this.gameOverState = false;
+    this.bgStarted = false;
   }
 
   preload() {
@@ -20,9 +21,12 @@ export default class PlayScene extends Phaser.Scene {
 
     this.pipes = this.physics.add.group();
 
-    let bgSound = new Audio("./assets/sounds/railgun_bgsound.mp3");
-    bgSound.loop = true;
-    bgSound.play();
+    if (this.bgStarted === false) {
+      this.bgStarted = true;
+      let bgSound = new Audio("./assets/sounds/railgun_bgsound.mp3");
+      bgSound.loop = true;
+      bgSound.play();
+    }
   }
 
   createBG() {
@@ -111,24 +115,20 @@ export default class PlayScene extends Phaser.Scene {
     new Audio("./assets/sounds/round_end.wav").play();
 
     this.physics.pause();
-    this.scene.pause();
+    // this.scene.pause();
 
     this.MANAGER.setTint(0xf0000);
 
-    this.time.addEvent({
-      delay: 2000,
-      callback: () => {
-        this.pipes = null;
-        this.pipes = this.physics.add.group();
-        this.PIPE_HORIZONTAL_DISTANCE = 0;
-        this.createPipes();
+    const restartButton = this.add.image(700, 550, "restart").setScale(2);
+    restartButton.setInteractive().on("pointerdown", () => {
+      
+      this.pipes = null;
+      this.pipes = this.physics.add.group();
+      this.PIPE_HORIZONTAL_DISTANCE = 0;
+      this.createPipes();
+      this.scoreCount = 0;
 
-        this.scoreCount = 0;
-        this.gameOverState = false;
-
-        this.scene.restart();
-      },
-      loop: false,
+      this.scene.restart();
     });
   }
 
