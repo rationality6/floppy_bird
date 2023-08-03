@@ -72,6 +72,23 @@ export default class PlayScene extends BaseScene {
     pauseButton.setInteractive().on("pointerdown", () => {
       alert("pause");
     });
+
+    let flip_bird = this.add.image(750, 50, "bird").setScale(3);
+    flip_bird.setFlipX(true);
+    flip_bird.flipY = true;
+
+    this.anims.create({
+      key: "fly",
+      frames: this.anims.generateFrameNumbers("bird", {
+        start: 9,
+        end: 16,
+      }),
+      frameRate: 42,
+      repeat: -1,
+    });
+
+    this.MANAGER.setFlipX(true);
+    this.MANAGER.play("fly");
   }
 
   createColliders() {
@@ -121,7 +138,6 @@ export default class PlayScene extends BaseScene {
 
     const restartButton = this.add.image(700, 550, "restart").setScale(2);
     restartButton.setInteractive().on("pointerdown", () => {
-      
       this.pipes = null;
       this.pipes = this.physics.add.group();
       this.PIPE_HORIZONTAL_DISTANCE = 0;
@@ -160,7 +176,7 @@ export default class PlayScene extends BaseScene {
   }
 
   createManager() {
-    this.MANAGER = this.physics.add.sprite(50, 200, "manager");
+    this.MANAGER = this.physics.add.sprite(50, 200, "bird");
 
     this.MANAGER.displayWidth = 50;
     this.MANAGER.displayHeight = 80;

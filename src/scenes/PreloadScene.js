@@ -31,6 +31,11 @@ class PreloadScene extends BaseScene {
     this.load.image("pause", "assets/pause.png");
 
     this.load.image("restart", "assets/back.png");
+
+    this.load.spritesheet("bird", "assets/birdSprite.png", {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
   }
 
   create() {

@@ -3,6 +3,12 @@ import BaseScene from "./BaseScene";
 class MenuScene extends BaseScene {
   constructor(config) {
     super("MenuScene", config);
+
+    this.menu = [
+      { scene: "PlayScene", text: "플러피수박 해보기" },
+      { scene: "ScoreScene", text: "Score" },
+      { scene: null, text: "Exit" },
+    ];
   }
 
   preload() {
@@ -69,6 +75,7 @@ class MenuScene extends BaseScene {
       .on("pointerdown", () => {
         this.scene.start("PeoplepowerScene");
       });
+
   }
 }
 
